@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Jimmi Dyson"]
   spec.email         = ["jimmidyson@gmail.com"]
   spec.description   = %q{Output filter plugin to add Kubernetes metadata}
-  spec.summary       =  %q{Output filter plugin to add messages}
+  spec.summary       = %q{Output filter plugin to add Kubernetes metadata}
   spec.homepage      = "https://github.com/jimmidyson/fluent-plugin-kubernetes"
   spec.license       = "ASL2"
 

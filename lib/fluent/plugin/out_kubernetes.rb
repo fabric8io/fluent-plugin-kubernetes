@@ -11,13 +11,11 @@ class Fluent::KubernetesOutput < Fluent::Output
 
   def configure(conf)
     super
-
-    @egrep_cmd = "egrep \"#{K8S_CONTAINER_NAME_REGEX}\""
   end
 
   def emit(tag, es, chain)
     es.each do |time,record|
-      Fluent::Engine.emit(tag, time, enrich_record(record))
+      Fluent::Engine.emit('kubernetes', time, enrich_record(record))
     end
 
     chain.next

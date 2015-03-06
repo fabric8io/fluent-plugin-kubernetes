@@ -1,6 +1,5 @@
 require "bundler/gem_tasks"
 require "rake/testtask"
-require 'minitest/autorun'
 
 Rake::TestTask.new(:test) do |test|
   test.libs << 'lib' << 'test'
