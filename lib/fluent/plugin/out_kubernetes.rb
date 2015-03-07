@@ -19,7 +19,9 @@ class Fluent::KubernetesOutput < Fluent::Output
 
   def emit(tag, es, chain)
     es.each do |time,record|
-      Fluent::Engine.emit('kubernetes', time, enrich_record(tag, record))
+      Fluent::Engine.emit('kubernetes',
+                          time,
+                          enrich_record(tag, record))
     end
 
     chain.next
@@ -37,7 +39,6 @@ class Fluent::KubernetesOutput < Fluent::Output
     if @container_id
       id = interpolate(tag, @container_id)
       record['container_id'] = id
-      puts id
       container = Docker::Container.get(id)
       if container
         container_name = container.json['Name']
