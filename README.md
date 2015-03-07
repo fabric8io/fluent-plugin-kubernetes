@@ -1,10 +1,5 @@
 # fluent-plugin-kubernetes, a plugin for [Fluentd](http://fluentd.org) 
 
-## Requirements
-
-Requires [fluent-plugin-docker-format](https://github.com/bwalex/fluent-plugin-docker-format)
-plugin.
-
 ## Installation
 
     gem install fluent-plugin-kubernetes
@@ -18,16 +13,13 @@ plugin.
   time_format %Y-%m-%dT%H:%M:%S
   tag docker.*
   format json
+  read_from_head true
 </source>
 
 <match docker.var.lib.docker.containers.*.*.log>
-  type docker_format
+  type kubernetes
   container_id ${tag_parts[5]}
   tag docker.${name}
-</match>
-
-<match docker.**>
-  type kubernetes
 </match>
 
 <match kubernetes>
