@@ -33,6 +33,7 @@ class Fluent::KubernetesOutput < Fluent::Output
     super
 
     require 'docker'
+    require 'json'
   end
 
   def emit(tag, es, chain)
@@ -55,6 +56,17 @@ class Fluent::KubernetesOutput < Fluent::Output
 
   def enrich_record(tag, record)
     if @container_id
+      log = record['log'].strip
+      if log[0].eql?('{') && log[-1].eql?('}')
+        begin
+          parsed_log = JSON.parse(log)
+          record = record.merge(parsed_log)
+          unless parsed_log.has_key?('log')
+            record.delete('log')
+          end
+        rescue JSON::ParserError
+        end
+      end
       id = interpolate(tag, @container_id)
       record['container_id'] = id
       container = Docker::Container.get(id)
