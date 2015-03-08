@@ -9,6 +9,7 @@ end
 
 task :default => :test
 
+desc "Add copyright headers"
 task :headers do
   require 'rubygems'
   require 'copyright_header'
