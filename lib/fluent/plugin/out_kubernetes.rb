@@ -43,7 +43,7 @@ class Fluent::KubernetesOutput < Fluent::Output
       if container
         container_name = container.json['Name']
         if container_name
-          record["container_name"] = container_name
+          record["container_name"] = container_name[1..-1]
           regex = Regexp.new(@kubernetes_pod_regex)
           match = container_name.match(regex)
           if match
