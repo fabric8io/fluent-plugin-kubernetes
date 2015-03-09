@@ -16,8 +16,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'rubygems'
-require 'bundler'
+require 'coveralls'
+Coveralls.wear!
+
+begin
+  require "bundler"
+rescue LoadError => e
+  STDERR.puts e.message
+  STDERR.puts "Run `gem install bundler` to install Bundler."
+  exit e.status_code
+end
+
 begin
   Bundler.setup(:default, :development)
 rescue Bundler::BundlerError => e
@@ -25,9 +34,6 @@ rescue Bundler::BundlerError => e
   $stderr.puts "Run `bundle install` to install missing gems"
   exit e.status_code
 end
-
-require 'coveralls'
-Coveralls.wear!
 
 require 'minitest/spec'
 require 'minitest/autorun'
