@@ -16,8 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'coveralls'
-Coveralls.wear!
+require "codeclimate-test-reporter"
+CodeClimate::TestReporter.start
 
 begin
   require "bundler"
@@ -60,6 +60,7 @@ VCR.configure do |c|
   c.cassette_library_dir = 'test/cassettes'
   c.hook_into :excon, :webmock
   c.filter_sensitive_data('<DOCKER_HOST>') { Docker.url.sub(/tcp\:/, 'https:') }
+  c.ignore_hosts 'codeclimate.com'
 end
 
 MinitestVcr::Spec.configure!
