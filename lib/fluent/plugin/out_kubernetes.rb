@@ -56,37 +56,45 @@ class Fluent::KubernetesOutput < Fluent::Output
     id = interpolate(tag, @container_id)
     if !id.empty?
       record['container_id'] = id
-      if record.has_key?('log')
-        log = record['log'].strip
-        if log[0].eql?('{') && log[-1].eql?('}')
-          begin
-            parsed_log = JSON.parse(log)
-            record = record.merge(parsed_log)
-            unless parsed_log.has_key?('log')
-              record.delete('log')
-            end
-          rescue JSON::ParserError
-          end
-        end
-      end
-      container = Docker::Container.get(id)
-      if container
-        container_name = container.json['Name']
-        if container_name
-          record["container_name"] = container_name[1..-1]
-          regex = Regexp.new(@kubernetes_pod_regex)
-          match = container_name.match(regex)
-          if match
-            pod_container_name, pod_name, pod_namespace =
-              match.captures
-            record["pod_namespace"] = pod_namespace
-            record["pod"] = pod_name
-            record["pod_container"] = pod_container_name
-          end
+      enrich_container_data(id, record)
+      merge_json_log(record)
+    end
+    record
+  end
+
+  def enrich_container_data(id, record)
+    container = Docker::Container.get(id)
+    if container
+      container_name = container.json['Name']
+      if container_name
+        record["container_name"] = container_name[1..-1] if container_name[0] == '/'
+        regex = Regexp.new(@kubernetes_pod_regex)
+        match = container_name.match(regex)
+        if match
+          pod_container_name, pod_name, pod_namespace =
+            match.captures
+          record["pod_namespace"] = pod_namespace
+          record["pod"] = pod_name
+          record["pod_container"] = pod_container_name
         end
       end
     end
-    record
+  end
+
+  def merge_json_log(record)
+    if record.has_key?('log')
+      log = record['log'].strip
+      if log[0].eql?('{') && log[-1].eql?('}')
+        begin
+          parsed_log = JSON.parse(log)
+          record = record.merge(parsed_log)
+          unless parsed_log.has_key?('log')
+            record.delete('log')
+          end
+        rescue JSON::ParserError
+        end
+      end
+    end
   end
 
 end

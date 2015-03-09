@@ -50,10 +50,22 @@ describe 'Fluentd Kubernetes Output Plugin' do
     describe 'non-kubernetes container' do
       it 'leaves event untouched' do
         @fluentd_driver.run do
-          @fluentd_driver.emit("container_name" => "non-kubernetes")
+          @fluentd_driver.emit("container_name" => "/non-kubernetes")
         end
         assert_equal [
           {'container_id' => '9b26b527e73550b1fb217d0d643b15aa2ec6607593a6b477cda82a9c72cb82a7', "container_name" => "non-kubernetes"},
+        ], @fluentd_driver.records
+
+        @fluentd_driver.run
+      end
+    end
+    describe 'container name not starting with slash' do
+      it 'uses full container name' do
+        @fluentd_driver.run do
+          @fluentd_driver.emit("container_name" => "no-leading-slash")
+        end
+        assert_equal [
+          {'container_id' => '9b26b527e73550b1fb217d0d643b15aa2ec6607593a6b477cda82a9c72cb82a7', "container_name" => "no-leading-slash"},
         ], @fluentd_driver.records
 
         @fluentd_driver.run
