@@ -1,4 +1,6 @@
-# fluent-plugin-kubernetes, a plugin for [Fluentd](http://fluentd.org) 
+# fluent-plugin-kubernetes, a plugin for [Fluentd](http://fluentd.org)
+[![Circle CI](https://circleci.com/gh/jimmidyson/fluent-plugin-kubernetes.svg?style=svg)](https://circleci.com/gh/jimmidyson/fluent-plugin-kubernetes)
+[![Coverage Status](https://coveralls.io/repos/jimmidyson/fluent-plugin-kubernetes/badge.svg)](https://coveralls.io/r/jimmidyson/fluent-plugin-kubernetes)
 
 ## Installation
 
