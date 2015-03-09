@@ -32,8 +32,20 @@
 
 ### Assuming following inputs are coming:
     test.aa: {"container_name":"k8s_CONTAINER.2f44475a_POD.NAMESPACE.api_ae0aeb72-c44f-11e4-a274-54ee7527188d_d442134f", "json":"dayo"}
-### then output bocomes as belows
+### then output becomes as belows
     test.aa: {"container_name":"k8s_CONTAINER.2f44475a_POD.NAMESPACE.api_ae0aeb72-c44f-11e4-a274-54ee7527188d_d442134f", "pod":"POD", "pod_namespace":"NAMESPACE", "pod_container":"CONTAINER", "json":"dayo", "hoge":"moge","hogehoge":"mogemoge"}
+
+## JSON logging
+
+Logging requires context to be really useful. Context can either be derived
+from log lines from known formats, but this is error prone & requires
+processing power. The logging application is the best place to add
+context.
+
+If you use JSON for your application logs you can add context to your logs
+as you go. This plugin will parse your log lines & if it sees that they are
+JSON it will merge it in to the top level record so your contextual logging
+will be nicely searchable.
 
 ## Contributing
 
