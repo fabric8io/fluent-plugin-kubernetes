@@ -30,10 +30,33 @@
 </match>
 ```
 
-### Assuming following inputs are coming:
-    test.aa: {"container_name":"k8s_CONTAINER.2f44475a_POD.NAMESPACE.api_ae0aeb72-c44f-11e4-a274-54ee7527188d_d442134f", "json":"dayo"}
-### then output becomes as belows
-    test.aa: {"container_name":"k8s_CONTAINER.2f44475a_POD.NAMESPACE.api_ae0aeb72-c44f-11e4-a274-54ee7527188d_d442134f", "pod":"POD", "pod_namespace":"NAMESPACE", "pod_container":"CONTAINER", "json":"dayo", "hoge":"moge","hogehoge":"mogemoge"}
+Docker logs in JSON format. Log files are normally in
+`/var/lib/docker/containers/*/*-json.log`, depending on what your Docker
+data directory is.
+
+Assuming following inputs are coming from a log file:
+0bbc558cca13c5a92cc59f33626db0aaa2afea24742d2fbe549e3a30faf7ab09-json.log:
+```
+{
+  "log": "Something happened\n",
+  "stream": "stdout",
+  "time": "2015-03-07T20:04:17.604503223Z"
+}
+```
+
+Then output becomes as belows
+```
+{
+  "log": "Something happened\n",
+  "stream": "stdout",
+  "time": "2015-03-07T20:04:17.604503223Z"
+  "container_id": "0bbc558cca13c5a92cc59f33626db0aaa2afea24742d2fbe549e3a30faf7ab09",
+  "container_name": "k8s_CONTAINER.2f44475a_POD.NAMESPACE.api_ae0aeb72-c44f-11e4-a274-54ee7527188d_d442134f",
+  "pod": "POD",
+  "pod_namespace": "NAMESPACE",
+  "pod_container": "CONTAINER"
+}
+```
 
 ## JSON logging
 
@@ -46,6 +69,30 @@ If you use JSON for your application logs you can add context to your logs
 as you go. This plugin will parse your log lines & if it sees that they are
 JSON it will merge it in to the top level record so your contextual logging
 will be nicely searchable.
+
+Something like this:
+
+```
+{
+  "log": "{\"context\":\"something\"}",
+  "stream": "stdout",
+  "time": "2015-03-07T20:04:17.604503223Z"
+}
+```
+
+Then output becomes as belows
+```
+{
+  "context": "something",
+  "stream": "stdout",
+  "time": "2015-03-07T20:04:17.604503223Z"
+  "container_id": "0bbc558cca13c5a92cc59f33626db0aaa2afea24742d2fbe549e3a30faf7ab09",
+  "container_name": "k8s_CONTAINER.2f44475a_POD.NAMESPACE.api_ae0aeb72-c44f-11e4-a274-54ee7527188d_d442134f",
+  "pod": "POD",
+  "pod_namespace": "NAMESPACE",
+  "pod_container": "CONTAINER"
+}
+```
 
 ## Contributing
 
