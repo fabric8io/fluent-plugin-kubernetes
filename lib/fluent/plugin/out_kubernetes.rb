@@ -56,8 +56,8 @@ class Fluent::KubernetesOutput < Fluent::Output
     id = interpolate(tag, @container_id)
     if !id.empty?
       record['container_id'] = id
-      enrich_container_data(id, record)
-      merge_json_log(record)
+      record = enrich_container_data(id, record)
+      record = merge_json_log(record)
     end
     record
   end
@@ -79,6 +79,7 @@ class Fluent::KubernetesOutput < Fluent::Output
         end
       end
     end
+    record
   end
 
   def merge_json_log(record)
@@ -95,6 +96,7 @@ class Fluent::KubernetesOutput < Fluent::Output
         end
       end
     end
+    record
   end
 
 end

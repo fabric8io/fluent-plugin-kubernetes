@@ -71,6 +71,18 @@ describe 'Fluentd Kubernetes Output Plugin' do
         @fluentd_driver.run
       end
     end
+    describe 'json log data' do
+      it 'merges json log data' do
+        @fluentd_driver.run do
+          @fluentd_driver.emit({"container_name" => "non-kubernetes", "log" => "{\"this\":\"rocks\"}"})
+        end
+        assert_equal [
+          {'container_id' => '9b26b527e73550b1fb217d0d643b15aa2ec6607593a6b477cda82a9c72cb82a7', "container_name" => "non-kubernetes", "this" => "rocks"},
+        ], @fluentd_driver.records
+
+        @fluentd_driver.run
+      end
+    end
   end
 
 end
