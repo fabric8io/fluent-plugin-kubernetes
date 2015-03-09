@@ -26,6 +26,9 @@ rescue Bundler::BundlerError => e
   exit e.status_code
 end
 
+require 'coveralls'
+Coveralls.wear!
+
 require 'minitest/spec'
 require 'minitest/autorun'
 require 'minitest/benchmark'
@@ -42,7 +45,18 @@ unless ENV.has_key?('VERBOSE')
   $log = nulllogger
 end
 
+require "minispec-metadata"
+require "vcr"
+require "minitest-vcr"
+require "webmock"
+
+VCR.configure do |c|
+  c.cassette_library_dir = 'test/cassettes'
+  c.hook_into :excon, :webmock
+  c.filter_sensitive_data('<DOCKER_HOST>') { Docker.url.sub(/tcp\:/, 'https:') }
+end
+
+MinitestVcr::Spec.configure!
+
 require 'fluent/plugin/out_kubernetes'
 
-class Test::Unit::TestCase
-end

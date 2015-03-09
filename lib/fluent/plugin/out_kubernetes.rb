@@ -16,8 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require 'open3'
-
 class Fluent::KubernetesOutput < Fluent::Output
   Fluent::Plugin.register_output('kubernetes', self)
 
@@ -55,20 +53,22 @@ class Fluent::KubernetesOutput < Fluent::Output
   end
 
   def enrich_record(tag, record)
-    if @container_id
-      log = record['log'].strip
-      if log[0].eql?('{') && log[-1].eql?('}')
-        begin
-          parsed_log = JSON.parse(log)
-          record = record.merge(parsed_log)
-          unless parsed_log.has_key?('log')
-            record.delete('log')
+    id = interpolate(tag, @container_id)
+    if !id.empty?
+      record['container_id'] = id
+      if record.has_key?('log')
+        log = record['log'].strip
+        if log[0].eql?('{') && log[-1].eql?('}')
+          begin
+            parsed_log = JSON.parse(log)
+            record = record.merge(parsed_log)
+            unless parsed_log.has_key?('log')
+              record.delete('log')
+            end
+          rescue JSON::ParserError
           end
-        rescue JSON::ParserError
         end
       end
-      id = interpolate(tag, @container_id)
-      record['container_id'] = id
       container = Docker::Container.get(id)
       if container
         container_name = container.json['Name']

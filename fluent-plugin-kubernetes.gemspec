@@ -22,6 +22,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake"
   spec.add_development_dependency "minitest", "~> 4.0"
   spec.add_development_dependency "copyright-header"
+  spec.add_development_dependency "minitest-vcr"
+  spec.add_development_dependency "webmock"
   spec.add_runtime_dependency "fluentd"
   spec.add_runtime_dependency "docker-api"
 end

@@ -1,0 +1,55 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: "<DOCKER_HOST>/v1.16/containers/9b26b527e73550b1fb217d0d643b15aa2ec6607593a6b477cda82a9c72cb82a7/json"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Swipely/Docker-API 1.20.0
+      Content-Type:
+      - text/plain
+  response:
+    status:
+      code: 200
+      message: 
+    headers:
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 09 Mar 2015 11:43:55 GMT
+    body:
+      encoding: UTF-8
+      string: |
+        {"Id": "9b26b527e73550b1fb217d0d643b15aa2ec6607593a6b477cda82a9c72cb82a7","Name":"/k8s_CONTAINER.ff8e9ce_POD.NAMESPACE.api_2b249189-c3e0-11e4-839d-54ee7527188d_c306d8a8"}
+    http_version: 
+  recorded_at: Mon, 09 Mar 2015 11:43:55 GMT
+- request:
+    method: get
+    uri: "<DOCKER_HOST>/v1.16/containers/9b26b527e73550b1fb217d0d643b15aa2ec6607593a6b477cda82a9c72cb82a7/json"
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Swipely/Docker-API 1.20.0
+      Content-Type:
+      - text/plain
+  response:
+    status:
+      code: 200
+      message: 
+    headers:
+      Content-Type:
+      - application/json
+      Date:
+      - Mon, 09 Mar 2015 11:43:55 GMT
+    body:
+      encoding: UTF-8
+      string: |
+        {"Id": "9b26b527e73550b1fb217d0d643b15aa2ec6607593a6b477cda82a9c72cb82a7","Name":"/k8s_CONTAINER.ff8e9ce_POD.NAMESPACE.api_2b249189-c3e0-11e4-839d-54ee7527188d_c306d8a8"}
+    http_version: 
+  recorded_at: Mon, 09 Mar 2015 11:43:55 GMT
+recorded_with: VCR 2.9.3

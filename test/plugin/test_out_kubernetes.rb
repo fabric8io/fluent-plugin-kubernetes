@@ -18,52 +18,45 @@
 #
 require 'helper'
 
-class KubernetesOutputTest < Test::Unit::TestCase
-  def setup
+describe 'Fluentd Kubernetes Output Plugin' do
+
+  CONFIG = %{
+    container_id ${tag_parts[5]}
+    tag docker.${name}
+  }
+
+  before do
     Fluent::Test.setup
+    @fluentd_driver = Fluent::Test::OutputTestDriver.new(
+      Fluent::KubernetesOutput, 
+      'docker.var.lib.docker.containers.9b26b527e73550b1fb217d0d643b15aa2ec6607593a6b477cda82a9c72cb82a7')
+    .configure(CONFIG)
   end
 
-  CONFIG = %[
-  ]
+  describe 'add kubernetes metadata', vcr: {record: :once} do
+    describe 'kubernetes container' do
+      it 'enriches with correct kubernets metadata' do
+        @fluentd_driver.run do
+          @fluentd_driver.emit("container_name" => "k8s_CONTAINER.ff8e9ce_POD.NAMESPACE.api_2b249189-c3e0-11e4-839d-54ee7527188d_c306d8a8")
+        end
+        mapped = {'container_id' => '9b26b527e73550b1fb217d0d643b15aa2ec6607593a6b477cda82a9c72cb82a7', 'pod' => 'POD', 'pod_namespace' => 'NAMESPACE', 'pod_container' => 'CONTAINER'}
+        assert_equal [
+          {"container_name" => "k8s_CONTAINER.ff8e9ce_POD.NAMESPACE.api_2b249189-c3e0-11e4-839d-54ee7527188d_c306d8a8"}.merge(mapped),
+        ], @fluentd_driver.records
 
-  def create_driver(conf = CONFIG, tag='test')
-    Fluent::Test::OutputTestDriver.new(Fluent::KubernetesOutput, tag).configure(conf)
-  end
-
-  def test_k8s_pod
-    d = create_driver
-
-    d.run do
-      d.emit("container_name" => "k8s_CONTAINER.ff8e9ce_POD.NAMESPACE.api_2b249189-c3e0-11e4-839d-54ee7527188d_c306d8a8")
+        @fluentd_driver.run
+      end
     end
-    mapped = {'pod' => 'POD', 'pod_namespace' => 'NAMESPACE', 'pod_container' => 'CONTAINER'}
-    assert_equal [
-      {"container_name" => "k8s_CONTAINER.ff8e9ce_POD.NAMESPACE.api_2b249189-c3e0-11e4-839d-54ee7527188d_c306d8a8"}.merge(mapped),
-    ], d.records
+    describe 'non-kubernetes container' do
+      it 'leaves event untouched' do
+        @fluentd_driver.run do
+          @fluentd_driver.emit("container_name" => "non-kubernetes")
+        end
+        assert_equal [
+          {'container_id' => '9b26b527e73550b1fb217d0d643b15aa2ec6607593a6b477cda82a9c72cb82a7', "container_name" => "non-kubernetes"},
+        ], @fluentd_driver.records
 
-    d.run
-  end
-
-  def test_non_k8s_container
-    d = create_driver
-
-    d.run do
-      d.emit("container_name" => "nonk8s")
-    end
-    assert_equal [
-      {"container_name" => "nonk8s"},
-    ], d.records
-
-    d.run
-  end
-
-  def bench_k8s_pod
-    input = {"container_name" => "k8s_CONTAINER.ff8e9ce_POD.NAMESPACE.api_2b249189-c3e0-11e4-839d-54ee7527188d_c306d8a8"}
-    plugin = Fluent::KubernetesOutput.new
-    plugin.configure({})
-    assert_performance_linear do |n|
-      n.times do
-        plugin.enrich_record(input)
+        @fluentd_driver.run
       end
     end
   end
