@@ -62,22 +62,25 @@ class Fluent::KubernetesOutput < Fluent::Output
     record
   end
 
-  def enrich_container_data(id, record)
+    #logging purposes only
+def logmetofile(value)
+  File.open("output.txt","a") do |f|
+              f.puts value
+   end
+end
+# This is changed for all versions of
+def enrich_container_data(id, record)
     container = Docker::Container.get(id)
+        #logmetofile(container.json['Config']['Labels'])
     if container
-      container_name = container.json['Name']
-      if container_name
-        record["container_name"] = container_name[1..-1] if container_name[0] == '/'
-        regex = Regexp.new(@kubernetes_pod_regex)
-        match = container_name.match(regex)
-        if match
-          pod_container_name, pod_name, pod_namespace =
-            match.captures
-          record["pod_namespace"] = pod_namespace
-          record["pod"] = pod_name
-          record["pod_container"] = pod_container_name
-        end
-      end
+      record["container_name"]= container.json['Config']['Labels']['io.kubernetes.container.name']
+      #logmetofile(container.json['Config']['Labels']['io.kubernetes.container.name'])
+      record["pod_namespace"] = container.json['Config']['Labels']['io.kubernetes.pod.namespace']
+      #logmetofile(container.json['Config']['Labels']['io.kubernetes.pod.namespace'])
+      record["pod"] = container.json['Config']['Labels']['io.kubernetes.pod.name']
+      #logmetofile(container.json['Config']['Labels']['io.kubernetes.pod.name'])
+      record["pod_UID"] = container.json['Config']['Labels']['io.kubernetes.pod.uid']
+      #logmetofile(container.json['Config']['Labels']['io.kubernetes.pod.uid'])
     end
     record
   end
