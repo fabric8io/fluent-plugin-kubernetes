@@ -19,6 +19,11 @@
 class Fluent::KubernetesOutput < Fluent::Output
   Fluent::Plugin.register_output('kubernetes', self)
 
+  # Define `router` method of v0.12 to support v0.10 or earlier
+  unless method_defined?(:router)
+    define_method("router") { Fluent::Engine }
+  end
+
   config_param :container_id, :string
   config_param :tag, :string
   config_param :kubernetes_pod_regex, :string, default: '^[^_]+_([^\.]+)\.[^_]+_([^\.]+)\.([^\.]+)'
@@ -36,9 +41,9 @@ class Fluent::KubernetesOutput < Fluent::Output
 
   def emit(tag, es, chain)
     es.each do |time,record|
-      Fluent::Engine.emit('kubernetes',
-                          time,
-                          enrich_record(tag, record))
+      router.emit('kubernetes',
+                  time,
+                  enrich_record(tag, record))
     end
 
     chain.next
